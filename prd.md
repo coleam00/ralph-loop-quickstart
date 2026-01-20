@@ -238,7 +238,7 @@ src/
       "Verify project runs with npm run dev",
       "Clean up boilerplate files"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "setup",
@@ -248,7 +248,7 @@ src/
       "Install core components: button, card, input, dialog, toast",
       "Verify components render correctly"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "setup",
