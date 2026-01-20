@@ -3,3 +3,4 @@ venv
 node_modules
 CLAUDE.md
 clerk-nextjs-guide
+.cache

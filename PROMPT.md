@@ -6,15 +6,14 @@ First read activity.md to see what was recently accomplished.
 
 ## Start the Application
 
-<!-- START_COMMAND_PLACEHOLDER: Update this section after creating your PRD -->
-Start the site locally. Use the appropriate command for your tech stack:
-- `npm run dev` (for Next.js, Vite, or similar)
-- `pnpm dev` (if using pnpm)
-- `bun dev` (if using Bun)
-- `python3 -m http.server 8000 --bind 127.0.0.1` (for static HTML)
+Start the Next.js development server:
+```bash
+npm run dev
+```
 
-If the port is taken, try another port.
-<!-- END_START_COMMAND_PLACEHOLDER -->
+The application will be available at http://localhost:3000
+
+If port 3000 is taken, Next.js will automatically try the next available port.
 
 ## Work on Tasks
 
@@ -22,10 +21,11 @@ Open prd.md and find the single highest priority task where `"passes": false`.
 
 Work on exactly ONE task:
 1. Implement the change according to the task steps
-2. Run any available checks:
-   - `npm run lint` (if available)
-   - `npm run typecheck` (if available)
-   - `npm run build` (if available)
+2. Run available checks:
+   ```bash
+   npm run lint
+   npm run build
+   ```
 
 ## Verify in Browser
 

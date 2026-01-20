@@ -24,7 +24,14 @@
       "Bash(git status:*)",
       "Bash(git log:*)",
       "Bash(git add:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(next:*)",
+      "Bash(drizzle-kit:*)",
+      "Bash(vercel:*)",
+      "Bash(tsc:*)",
+      "Bash(eslint:*)",
+      "Bash(prettier:*)",
+      "Bash(tailwindcss:*)"
     ],
     "deny": [
       "Bash(sudo:*)",
