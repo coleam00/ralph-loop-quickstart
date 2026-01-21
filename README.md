@@ -14,7 +14,7 @@ AI Habit Coach is a full-stack habit tracking application with AI-powered coachi
 ### 1. Clone and Install
 
 ```bash
-git clone <repo-url>
+git clone https://github.com/coleam00/ralph-loop-quickstart
 cd ralph-loop-quickstart
 npm install
 ```
