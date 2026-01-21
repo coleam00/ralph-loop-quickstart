@@ -1,9 +1,9 @@
 # AI Habit Coach - Activity Log
 
 ## Current Status
-**Last Updated:** 2026-01-20
-**Tasks Completed:** 11 / 19
-**Current Task:** Task 11 completed
+**Last Updated:** 2026-01-21
+**Tasks Completed:** 12 / 19
+**Current Task:** Task 12 completed
 
 ---
 
@@ -578,4 +578,63 @@ agent-browser screenshot screenshots/task11-habit-goal-linking.png
 - Progress bar displays percentage based on linked habit completions
 - Edit habit correctly loads and displays the linked goal
 - Changing goal association in edit works correctly
+- Lint passes with no errors
+
+### 2026-01-21 - Task 12: Build AI chat interface
+
+**Task:** Build AI chat interface
+
+**Changes Made:**
+- Created src/components/chat/chat-message.tsx - displays individual chat messages with user/assistant styling
+  - Message component with role-based alignment (user on right, assistant on left)
+  - Timestamp display
+  - ChatMessageSkeleton for loading states
+- Created src/components/chat/chat-input.tsx - chat input area with send button
+  - Auto-expanding textarea
+  - Enter key to send (Shift+Enter for newline)
+  - Disabled state during loading
+- Created src/components/chat/chat-container.tsx - main chat interface component
+  - Message history state management
+  - Suggested prompts for getting started
+  - Empty state with conversation starter UI
+  - Auto-scroll to latest message
+  - Loading state with skeleton messages
+- Created src/components/chat/index.ts - exports all chat components
+- Updated src/app/(dashboard)/coach/page.tsx to use ChatContainer
+- Created src/app/api/chat/route.ts - placeholder API endpoint
+  - Handles authenticated POST requests
+  - Returns contextual placeholder responses based on keywords
+  - Will be replaced with OpenRouter integration in Task 13
+
+**Commands Run:**
+```bash
+npm run dev
+npm run lint
+agent-browser open http://localhost:3000/coach
+agent-browser fill @e10 "Hello, I want to improve my morning routine"
+agent-browser click @e11 (Send)
+agent-browser screenshot screenshots/task12-chat-final.png
+```
+
+**Screenshots:**
+- screenshots/task12-chat-interface.png
+- screenshots/task12-chat-with-messages.png
+- screenshots/task12-chat-final.png
+
+**Issues & Resolutions:**
+- Initial API calls returned 404 - Next.js needed time to compile the new route
+- Server restart required to pick up new chat API route file
+- Compilation timeout on first page load - waited for full compilation
+
+**Verification:**
+- Chat interface renders with proper layout (header, message area, input)
+- Empty state shows conversation starter icon and suggested prompts
+- Clicking suggested prompts sends messages
+- User messages appear on the right side in dark bubbles
+- AI Coach responses appear on the left in lighter bubbles
+- Timestamps display correctly on messages
+- Chat input supports Enter to send, Shift+Enter for newlines
+- Send button disabled when input is empty or during loading
+- Loading skeleton appears while waiting for response
+- Placeholder API responds with contextual advice based on keywords
 - Lint passes with no errors

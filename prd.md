@@ -371,7 +371,7 @@ src/
       "Add message history display",
       "Style for good UX with loading states"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "feature",
