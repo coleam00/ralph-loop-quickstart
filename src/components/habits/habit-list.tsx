@@ -3,12 +3,18 @@
 import { useEffect, useState, useCallback } from 'react';
 import { HabitCard } from './habit-card';
 import { AddHabitDialog } from './add-habit-dialog';
+import { EditHabitDialog } from './edit-habit-dialog';
+import { DeleteHabitDialog } from './delete-habit-dialog';
 import type { Habit } from '@/lib/db';
 
 export function HabitList() {
   const [habits, setHabits] = useState<Habit[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [editingHabit, setEditingHabit] = useState<Habit | null>(null);
+  const [deletingHabit, setDeletingHabit] = useState<Habit | null>(null);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   const fetchHabits = useCallback(async () => {
     try {
@@ -29,6 +35,16 @@ export function HabitList() {
   useEffect(() => {
     fetchHabits();
   }, [fetchHabits]);
+
+  const handleEdit = (habit: Habit) => {
+    setEditingHabit(habit);
+    setEditDialogOpen(true);
+  };
+
+  const handleDelete = (habit: Habit) => {
+    setDeletingHabit(habit);
+    setDeleteDialogOpen(true);
+  };
 
   if (loading) {
     return (
@@ -116,10 +132,29 @@ export function HabitList() {
       ) : (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {habits.map((habit) => (
-            <HabitCard key={habit.id} habit={habit} />
+            <HabitCard
+              key={habit.id}
+              habit={habit}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+            />
           ))}
         </div>
       )}
+
+      <EditHabitDialog
+        habit={editingHabit}
+        open={editDialogOpen}
+        onOpenChange={setEditDialogOpen}
+        onHabitUpdated={fetchHabits}
+      />
+
+      <DeleteHabitDialog
+        habit={deletingHabit}
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        onHabitDeleted={fetchHabits}
+      />
     </div>
   );
 }

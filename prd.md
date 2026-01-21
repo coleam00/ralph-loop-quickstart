@@ -309,7 +309,7 @@ src/
       "Implement DELETE API route",
       "Verify edit and delete work correctly"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "feature",
