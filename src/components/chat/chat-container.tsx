@@ -14,7 +14,11 @@ const SUGGESTED_PROMPTS = [
   "What small habits can help reduce stress?",
 ];
 
-export function ChatContainer() {
+interface ChatContainerProps {
+  onInsightSaved?: () => void;
+}
+
+export function ChatContainer({ onInsightSaved }: ChatContainerProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [suggestions, setSuggestions] = useState<HabitSuggestion[]>([]);
@@ -28,6 +32,31 @@ export function ChatContainer() {
   useEffect(() => {
     scrollToBottom();
   }, [messages, isLoading]);
+
+  // Extract and save insights from conversation
+  const extractInsight = async (userMessage: string, assistantResponse: string) => {
+    try {
+      const response = await fetch("/api/insights/extract", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userMessage,
+          assistantResponse,
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.saved && onInsightSaved) {
+          onInsightSaved();
+        }
+      }
+    } catch (error) {
+      console.error("Error extracting insight:", error);
+    }
+  };
 
   const handleSendMessage = async (content: string) => {
     const userMessage: Message = {
@@ -73,6 +102,8 @@ export function ChatContainer() {
       // Check if response is streaming (text/plain) or JSON
       const contentType = response.headers.get("content-type") || "";
 
+      let finalResponse = "";
+
       if (contentType.includes("text/plain") && response.body) {
         // Handle streaming response
         const reader = response.body.getReader();
@@ -95,6 +126,7 @@ export function ChatContainer() {
             )
           );
         }
+        finalResponse = accumulatedContent;
       } else {
         // Handle JSON response (fallback for non-streaming)
         const data = await response.json();
@@ -103,6 +135,12 @@ export function ChatContainer() {
             m.id === assistantMessageId ? { ...m, content: data.content } : m
           )
         );
+        finalResponse = data.content;
+      }
+
+      // Extract insights from the conversation (runs in background)
+      if (finalResponse) {
+        extractInsight(content, finalResponse);
       }
     } catch (error) {
       console.error("Error sending message:", error);

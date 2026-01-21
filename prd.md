@@ -407,7 +407,7 @@ src/
       "Display insight history in sidebar",
       "Verify insights are saved and retrieved"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "feature",

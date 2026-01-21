@@ -2,8 +2,8 @@
 
 ## Current Status
 **Last Updated:** 2026-01-21
-**Tasks Completed:** 14 / 19
-**Current Task:** Task 14 completed
+**Tasks Completed:** 15 / 19
+**Current Task:** Task 15 completed
 
 ---
 
@@ -747,4 +747,70 @@ agent-browser open http://localhost:3000/coach
 - Accepting a suggestion creates the habit via existing /api/habits endpoint
 - Suggestions panel appears at top of chat interface
 - "Get Suggestions" button available in empty state and bottom bar
+- Lint passes with no errors
+
+### 2026-01-21 - Task 15: Build chat insight storage
+
+**Task:** Build chat insight storage
+
+**Changes Made:**
+- Created src/app/api/insights/route.ts - Insights API with GET and POST endpoints:
+  - GET: Fetches up to 20 most recent insights for the authenticated user
+  - POST: Creates a new insight with text and optional context (related habits/goals/topic)
+- Created src/app/api/insights/extract/route.ts - Insight extraction API endpoint:
+  - POST: Takes userMessage and assistantResponse, extracts insights using AI
+  - Saves meaningful insights to database with context metadata
+- Created src/lib/ai/insight-extraction.ts - Insight extraction utility:
+  - extractInsightFromConversation function that uses AI to analyze conversations
+  - Extracts user realizations, challenges, progress, goals, and behavior patterns
+  - Returns structured ExtractedInsight with insight text and context (related habits, goals, topic)
+- Created src/components/chat/insights-sidebar.tsx - Insights sidebar component:
+  - Displays insight history with topic badges (motivation=yellow, challenges=red, progress=green, planning=blue)
+  - Shows relative timestamps (Just now, Xm ago, Xh ago, Xd ago)
+  - Displays related habits as chips
+  - Loading skeleton and error states with retry button
+  - Empty state with helpful message
+- Updated src/lib/ai/index.ts to export insight extraction utilities
+- Updated src/components/chat/index.ts to export InsightsSidebar
+- Updated src/components/chat/chat-container.tsx:
+  - Added onInsightSaved callback prop
+  - Added extractInsight function that calls /api/insights/extract after AI responses
+  - Triggers insight extraction in background after each successful chat response
+- Updated src/app/(dashboard)/coach/page.tsx:
+  - Converted to client component with useState
+  - Added insightRefreshTrigger state to refresh sidebar when new insights saved
+  - Added responsive layout with insights sidebar (visible on lg screens)
+
+**Commands Run:**
+```bash
+npm run dev
+npm run lint
+npm run db:push
+agent-browser open http://localhost:3000/sign-in
+agent-browser fill "ref=e2" "coleam"
+agent-browser fill "ref=e3" "AdminPassword4#5$"
+agent-browser click "ref=e5"
+agent-browser goto http://localhost:3000/coach
+agent-browser fill "ref=e12" "I've been struggling to maintain my exercise habit..."
+agent-browser click "ref=e13" (Send)
+agent-browser screenshot screenshots/task15-chat-response.png
+```
+
+**Screenshots:**
+- screenshots/task15-coach-page.png
+- screenshots/task15-chat-response.png
+
+**Issues & Resolutions:**
+- Initial server had module cache issue - cleared .next folder and restarted
+- Server compilation timeout on first load - waited for full compilation
+
+**Verification:**
+- Insights API route (GET, POST /api/insights) works correctly
+- Insight extraction API (/api/insights/extract) extracts meaningful insights from conversations
+- Insights sidebar displays on coach page with existing insights (8 initially)
+- After sending a chat message, new insight was extracted and saved
+- Sidebar updated from 8 to 9 insights showing "Just now" timestamp
+- New insight correctly identified topic ("challenges") with red badge
+- Related habits displayed as chips (Daily workout, Exercise daily, Morning Exercise, Code practice)
+- Insight extraction runs in background without blocking chat
 - Lint passes with no errors
