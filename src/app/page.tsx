@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -16,13 +17,11 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { toast } from "sonner";
 import {
   SignedIn,
   SignedOut,
   SignInButton,
   SignUpButton,
-  UserButton,
 } from "@clerk/nextjs";
 
 export default function Home() {
@@ -37,9 +36,6 @@ export default function Home() {
                 Build better habits with AI-powered coaching
               </CardDescription>
             </div>
-            <SignedIn>
-              <UserButton />
-            </SignedIn>
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -61,10 +57,8 @@ export default function Home() {
               Welcome back! You&apos;re signed in and ready to build better habits.
             </p>
             <div className="flex gap-2">
-              <Button
-                onClick={() => toast.success("Let's build some habits!")}
-              >
-                Get Started
+              <Button asChild>
+                <Link href="/dashboard">Go to Dashboard</Link>
               </Button>
               <Dialog>
                 <DialogTrigger asChild>

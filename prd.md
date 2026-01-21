@@ -284,7 +284,7 @@ src/
       "Add sign-out button",
       "Make layout responsive"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "feature",

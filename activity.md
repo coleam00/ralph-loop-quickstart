@@ -2,8 +2,8 @@
 
 ## Current Status
 **Last Updated:** 2026-01-20
-**Tasks Completed:** 4 / 19
-**Current Task:** Task 4 completed
+**Tasks Completed:** 5 / 19
+**Current Task:** Task 5 completed
 
 ---
 
@@ -173,3 +173,51 @@ npm run build
   - All existing routes maintained
   - No TypeScript errors in schema or client files
 - Database scripts added to package.json for migrations
+
+### 2026-01-20 - Task 5: Build dashboard layout and navigation
+
+**Task:** Build dashboard layout and navigation
+
+**Changes Made:**
+- Created src/app/(dashboard)/layout.tsx with responsive sidebar/header layout
+- Created src/components/layout/sidebar.tsx with navigation links and logo
+- Created src/components/layout/header.tsx with mobile menu toggle and UserButton
+- Created src/app/(dashboard)/dashboard/page.tsx with overview cards and sections
+- Created src/app/(dashboard)/habits/page.tsx with placeholder habits list
+- Created src/app/(dashboard)/goals/page.tsx with placeholder goals list
+- Created src/app/(dashboard)/coach/page.tsx with chat interface placeholder
+- Updated src/app/page.tsx to link to dashboard for signed-in users
+- Navigation includes: Dashboard, Habits, Goals, Coach with icons
+- User info displayed via Clerk's UserButton in header
+- Sign-out available in UserButton dropdown menu
+- Mobile-responsive with collapsible sidebar and hamburger menu
+
+**Commands Run:**
+```bash
+npm run dev
+npm run lint
+npm run build
+agent-browser open http://localhost:3003
+agent-browser snapshot -i -c
+agent-browser screenshot screenshots/task5-dashboard-layout.png
+```
+
+**Screenshot:** screenshots/task5-dashboard-layout.png
+
+**Issues & Resolutions:**
+- Playwright not installed for agent-browser - installed @playwright/test and ran npx playwright install chromium
+- Dev server port conflicts (3000, 3002) - used port 3003
+- agent-browser ref selectors not always working - used CSS selectors with :has-text() as fallback
+
+**Verification:**
+- Dashboard layout renders with sidebar (logo, nav links, footer) and header (menu toggle, UserButton)
+- All navigation links work: Dashboard, Habits, Goals, Coach
+- Each page displays appropriate content with shadcn/ui Card components
+- UserButton opens menu with "Sign out" option
+- Layout is responsive - sidebar collapses on mobile with hamburger menu
+- Lint passes with no errors
+- Build completes successfully with routes:
+  - /dashboard (Static)
+  - /habits (Static)
+  - /goals (Static)
+  - /coach (Static)
