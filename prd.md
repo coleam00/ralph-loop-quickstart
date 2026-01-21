@@ -383,7 +383,7 @@ src/
       "Pass habits, goals, and streaks to AI",
       "Verify AI responds with relevant context"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "feature",

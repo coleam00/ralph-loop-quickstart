@@ -2,8 +2,8 @@
 
 ## Current Status
 **Last Updated:** 2026-01-21
-**Tasks Completed:** 12 / 19
-**Current Task:** Task 12 completed
+**Tasks Completed:** 13 / 19
+**Current Task:** Task 13 completed
 
 ---
 
@@ -637,4 +637,58 @@ agent-browser screenshot screenshots/task12-chat-final.png
 - Send button disabled when input is empty or during loading
 - Loading skeleton appears while waiting for response
 - Placeholder API responds with contextual advice based on keywords
+- Lint passes with no errors
+
+### 2026-01-21 - Task 13: Integrate OpenRouter for AI responses
+
+**Task:** Integrate OpenRouter for AI responses
+
+**Changes Made:**
+- Created src/lib/ai/openrouter.ts - OpenRouter API client with:
+  - createChatCompletion for non-streaming requests
+  - createStreamingChatCompletion for streaming requests
+  - parseSSEStream utility for parsing Server-Sent Events
+  - Type definitions for ChatMessage, OpenRouterResponse, StreamChunk
+- Created src/lib/ai/system-prompt.ts - System prompt builder with:
+  - HabitContext, GoalContext, UserContext type definitions
+  - buildSystemPrompt function that creates personalized AI context
+  - Includes user's habits, goals, streaks, and completion status
+- Created src/lib/ai/index.ts - Exports all AI utilities
+- Updated src/app/api/chat/route.ts:
+  - Integrated OpenRouter API calls
+  - Implemented getUserContext function to fetch habits, goals, and streaks
+  - Builds system prompt with user context for personalized responses
+  - Supports both streaming and non-streaming modes
+  - Error handling for API failures
+- Updated src/components/chat/chat-container.tsx:
+  - Added support for streaming responses
+  - Handles both text/plain (streaming) and JSON (non-streaming) responses
+  - Real-time message updates as streaming content arrives
+
+**Commands Run:**
+```bash
+npm run dev
+npm run lint
+agent-browser open http://localhost:3000/sign-in
+agent-browser goto http://localhost:3000/coach
+agent-browser click @e9 (Send stress reduction prompt)
+agent-browser screenshot screenshots/task13-openrouter-final.png
+```
+
+**Screenshots:**
+- screenshots/task13-openrouter-final.png
+
+**Issues & Resolutions:**
+- Initial streaming responses caused indefinite loading - switched to non-streaming mode for reliability
+- Server compilation timeouts - waited for full compilation before testing
+- Multiple dev server instances on different ports - killed all and restarted fresh
+
+**Verification:**
+- OpenRouter API integration working correctly
+- AI Coach receives user context (habits, goals, streaks)
+- Personalized responses reference user's actual goals ("fitness goals", "learning programming")
+- AI provides numbered habit suggestions with explanations
+- "My Suggestion" section tailors advice to user's existing habits
+- Chat messages display properly with user and assistant styling
+- Non-streaming mode works reliably
 - Lint passes with no errors

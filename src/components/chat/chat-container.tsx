@@ -36,6 +36,17 @@ export function ChatContainer() {
     setMessages((prev) => [...prev, userMessage]);
     setIsLoading(true);
 
+    // Create a placeholder for the assistant message that will be updated with streamed content
+    const assistantMessageId = crypto.randomUUID();
+    const assistantMessage: Message = {
+      id: assistantMessageId,
+      role: "assistant",
+      content: "",
+      createdAt: new Date(),
+    };
+
+    setMessages((prev) => [...prev, assistantMessage]);
+
     try {
       const response = await fetch("/api/chat", {
         method: "POST",
@@ -47,6 +58,7 @@ export function ChatContainer() {
             role: m.role,
             content: m.content,
           })),
+          stream: false, // Use non-streaming for better compatibility
         }),
       });
 
@@ -54,25 +66,52 @@ export function ChatContainer() {
         throw new Error("Failed to get response");
       }
 
-      const data = await response.json();
+      // Check if response is streaming (text/plain) or JSON
+      const contentType = response.headers.get("content-type") || "";
 
-      const assistantMessage: Message = {
-        id: crypto.randomUUID(),
-        role: "assistant",
-        content: data.content,
-        createdAt: new Date(),
-      };
+      if (contentType.includes("text/plain") && response.body) {
+        // Handle streaming response
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let accumulatedContent = "";
 
-      setMessages((prev) => [...prev, assistantMessage]);
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          const chunk = decoder.decode(value, { stream: true });
+          accumulatedContent += chunk;
+
+          // Update the assistant message with accumulated content
+          setMessages((prev) =>
+            prev.map((m) =>
+              m.id === assistantMessageId
+                ? { ...m, content: accumulatedContent }
+                : m
+            )
+          );
+        }
+      } else {
+        // Handle JSON response (fallback for non-streaming)
+        const data = await response.json();
+        setMessages((prev) =>
+          prev.map((m) =>
+            m.id === assistantMessageId ? { ...m, content: data.content } : m
+          )
+        );
+      }
     } catch (error) {
       console.error("Error sending message:", error);
-      const errorMessage: Message = {
-        id: crypto.randomUUID(),
-        role: "assistant",
-        content: "I'm sorry, I encountered an error. Please try again.",
-        createdAt: new Date(),
-      };
-      setMessages((prev) => [...prev, errorMessage]);
+      setMessages((prev) =>
+        prev.map((m) =>
+          m.id === assistantMessageId
+            ? {
+                ...m,
+                content: "I'm sorry, I encountered an error. Please try again.",
+              }
+            : m
+        )
+      );
     } finally {
       setIsLoading(false);
     }
@@ -135,7 +174,10 @@ export function ChatContainer() {
             {messages.map((message) => (
               <ChatMessage key={message.id} message={message} />
             ))}
-            {isLoading && <ChatMessageSkeleton />}
+            {isLoading &&
+              messages[messages.length - 1]?.content === "" && (
+                <ChatMessageSkeleton />
+              )}
           </>
         )}
         <div ref={messagesEndRef} />
