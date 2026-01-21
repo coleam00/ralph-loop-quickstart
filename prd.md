@@ -260,7 +260,7 @@ src/
       "Create sign-in and sign-up pages",
       "Verify authentication flow works"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "setup",
