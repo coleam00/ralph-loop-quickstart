@@ -445,7 +445,7 @@ src/
       "Implement error boundaries",
       "Verify notifications appear correctly"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "testing",
