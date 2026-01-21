@@ -347,7 +347,7 @@ src/
       "Implement goal form with name, description, category, target date",
       "Verify goals CRUD works correctly"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "feature",

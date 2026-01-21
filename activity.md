@@ -2,8 +2,8 @@
 
 ## Current Status
 **Last Updated:** 2026-01-20
-**Tasks Completed:** 9 / 19
-**Current Task:** Task 9 completed
+**Tasks Completed:** 10 / 19
+**Current Task:** Task 10 completed
 
 ---
 
@@ -424,4 +424,77 @@ agent-browser screenshot screenshots/task9-streak-working.png
 - Weekly habits display "X week streak"
 - Streak calculation handles consecutive days/weeks correctly
 - Milestone indicators ready to display for longer streaks
+- Lint passes with no errors
+
+### 2026-01-20 - Task 10: Build goals management page
+
+**Task:** Build goals management page
+
+**Changes Made:**
+- Created src/app/api/goals/route.ts with GET and POST endpoints
+  - GET: Fetches all goals for authenticated user
+  - POST: Creates new goal with name, description, category, targetDate validation
+- Created src/app/api/goals/[id]/route.ts with GET, PUT, DELETE endpoints
+  - GET: Fetches a single goal by ID
+  - PUT: Updates goal with validation, checks ownership, supports isCompleted toggle
+  - DELETE: Deletes goal after ownership verification
+- Created src/components/goals/goal-card.tsx - displays goal cards with:
+  - Category badge with color coding (health=green, productivity=blue, etc.)
+  - Completed/Overdue status badges
+  - Target date display with calendar icon
+  - Mark as complete toggle, edit, and delete buttons
+- Created src/components/goals/add-goal-dialog.tsx - modal with form fields:
+  - Name (required)
+  - Description (optional)
+  - Category dropdown (Health, Productivity, Learning, Fitness, Mindfulness, Finance, Relationships, Career)
+  - Target Date picker
+- Created src/components/goals/edit-goal-dialog.tsx - pre-filled edit form
+- Created src/components/goals/delete-goal-dialog.tsx - confirmation dialog
+- Created src/components/goals/goal-list.tsx - fetches and displays goals with:
+  - Loading skeleton states
+  - Error handling with retry button
+  - Empty state message
+  - Optimistic UI for completion toggle
+- Updated src/app/(dashboard)/goals/page.tsx to use GoalList component
+
+**Commands Run:**
+```bash
+npm run dev
+npm run db:push
+npm run lint
+agent-browser open http://localhost:3000/goals
+agent-browser click "ref=e6" (Add Goal)
+agent-browser fill "ref=e1" "Get fit and healthy"
+agent-browser fill "ref=e2" "Focus on exercise, nutrition, and mental wellness"
+agent-browser click "ref=e3" (Category dropdown)
+agent-browser click "ref=e2" (Select Health)
+agent-browser fill "ref=e4" "2026-06-01"
+agent-browser click "ref=e6" (Create Goal)
+agent-browser click "ref=e11" (Edit goal)
+agent-browser fill "ref=e1" "Get fit and healthy (updated)"
+agent-browser click "ref=e6" (Save Changes)
+agent-browser click "ref=e12" (Delete goal)
+agent-browser click "ref=e1" (Cancel)
+agent-browser click "ref=e7" (Mark as complete)
+agent-browser screenshot screenshots/task10-goals-crud.png
+```
+
+**Screenshot:** screenshots/task10-goals-crud.png, screenshots/task10-goal-complete.png
+
+**Issues & Resolutions:**
+- Goals API returned 404 initially - Next.js hadn't compiled the new routes yet
+- Restarted dev server to pick up new route files
+- After restart, routes compiled successfully
+
+**Verification:**
+- Goals API routes (GET, POST /api/goals and GET, PUT, DELETE /api/goals/[id]) work correctly
+- Goals list displays loading skeleton while fetching
+- Empty state shows when no goals exist
+- Add Goal dialog opens with form fields: name, description, category select, target date
+- Created goal "Get fit and healthy" with Health category and target date
+- Goal card displays with category badge, description, and target date
+- Edit dialog opens with pre-filled form, updates goal successfully
+- Delete dialog shows confirmation with goal name
+- Mark as complete toggle updates goal with optimistic UI
+- Toast notifications appear for all actions
 - Lint passes with no errors
