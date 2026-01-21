@@ -10,11 +10,19 @@ import {
 } from '@/components/ui/card';
 import type { Goal } from '@/lib/db';
 
+interface LinkedHabit {
+  id: string;
+  name: string;
+  isCompleted: boolean;
+}
+
 interface GoalCardProps {
   goal: Goal;
   onEdit: (goal: Goal) => void;
   onDelete: (goal: Goal) => void;
   onToggleComplete: (goal: Goal) => void;
+  linkedHabits?: LinkedHabit[];
+  progress?: number;
 }
 
 const categoryColors: Record<string, string> = {
@@ -28,7 +36,7 @@ const categoryColors: Record<string, string> = {
   career: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-300',
 };
 
-export function GoalCard({ goal, onEdit, onDelete, onToggleComplete }: GoalCardProps) {
+export function GoalCard({ goal, onEdit, onDelete, onToggleComplete, linkedHabits = [], progress = 0 }: GoalCardProps) {
   const categoryClass = goal.category
     ? categoryColors[goal.category.toLowerCase()] || 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300'
     : null;
@@ -161,7 +169,7 @@ export function GoalCard({ goal, onEdit, onDelete, onToggleComplete }: GoalCardP
           <CardDescription className="mt-2">{goal.description}</CardDescription>
         )}
       </CardHeader>
-      <CardContent className="pt-0">
+      <CardContent className="pt-0 space-y-3">
         {goal.targetDate && (
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <svg
@@ -183,6 +191,51 @@ export function GoalCard({ goal, onEdit, onDelete, onToggleComplete }: GoalCardP
             <span className={isOverdue ? 'text-red-600 dark:text-red-400' : ''}>
               Target: {formatDate(goal.targetDate)}
             </span>
+          </div>
+        )}
+
+        {linkedHabits.length > 0 && (
+          <div className="space-y-2">
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-muted-foreground">Progress</span>
+              <span className="font-medium">{progress}%</span>
+            </div>
+            <div className="w-full bg-muted rounded-full h-2">
+              <div
+                className="bg-primary h-2 rounded-full transition-all"
+                style={{ width: `${progress}%` }}
+              />
+            </div>
+            <div className="flex flex-wrap gap-1 mt-2">
+              {linkedHabits.map((habit) => (
+                <span
+                  key={habit.id}
+                  className={`text-xs px-2 py-0.5 rounded-full ${
+                    habit.isCompleted
+                      ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
+                      : 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400'
+                  }`}
+                >
+                  {habit.isCompleted && (
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="10"
+                      height="10"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="3"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="inline mr-1"
+                    >
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                  )}
+                  {habit.name}
+                </span>
+              ))}
+            </div>
           </div>
         )}
       </CardContent>

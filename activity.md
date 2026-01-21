@@ -2,8 +2,8 @@
 
 ## Current Status
 **Last Updated:** 2026-01-20
-**Tasks Completed:** 10 / 19
-**Current Task:** Task 10 completed
+**Tasks Completed:** 11 / 19
+**Current Task:** Task 11 completed
 
 ---
 
@@ -497,4 +497,85 @@ agent-browser screenshot screenshots/task10-goals-crud.png
 - Delete dialog shows confirmation with goal name
 - Mark as complete toggle updates goal with optimistic UI
 - Toast notifications appear for all actions
+- Lint passes with no errors
+
+### 2026-01-20 - Task 11: Link habits to goals
+
+**Task:** Link habits to goals
+
+**Changes Made:**
+- Updated src/components/habits/add-habit-dialog.tsx:
+  - Added goal fetching on dialog open
+  - Added goal selector dropdown with "No goal" default option
+  - Include goalId in habit creation payload
+- Updated src/components/habits/edit-habit-dialog.tsx:
+  - Added goal fetching on dialog open
+  - Added goal selector dropdown
+  - Fetch current goal association when editing a habit
+  - Include goalId in habit update payload
+- Updated src/app/api/habits/route.ts:
+  - Import habitGoals table
+  - Create habit-goal association when goalId is provided on creation
+- Updated src/app/api/habits/[id]/route.ts:
+  - Import habitGoals table
+  - Update habit-goal associations on edit (delete old, create new if provided)
+- Created src/app/api/habits/[id]/goals/route.ts:
+  - GET endpoint to fetch goal association for a habit
+  - Returns goalId and goalName
+- Created src/app/api/goals/[id]/habits/route.ts:
+  - GET endpoint to fetch habits linked to a goal
+  - Returns habits with completion status and progress percentage
+  - Calculates daily/weekly period completion for each habit
+- Updated src/components/goals/goal-card.tsx:
+  - Added linkedHabits and progress props
+  - Display progress bar when habits are linked
+  - Display linked habits as chips with completion status
+- Updated src/components/goals/goal-list.tsx:
+  - Fetch habits for each goal in parallel
+  - Pass linkedHabits and progress to GoalCard
+
+**Commands Run:**
+```bash
+npm run db:push
+npm run lint
+npm run dev
+agent-browser open http://localhost:3001/sign-in
+agent-browser click "ref=e1" (Go to Dashboard)
+agent-browser click "ref=e3" (Goals)
+agent-browser click "ref=e6" (Add Goal)
+agent-browser fill "ref=e1" "Get healthier"
+agent-browser fill "ref=e2" "Focus on exercise and wellness habits"
+agent-browser click "ref=e6" (Create Goal)
+agent-browser click "ref=e2" (Habits)
+agent-browser click "ref=e6" (Add Habit)
+agent-browser fill "ref=e1" "Daily workout"
+agent-browser fill "ref=e2" "30 minutes of exercise"
+agent-browser click "ref=e4" (Goal selector)
+agent-browser click "ref=e4" (Select Get healthier)
+agent-browser click "ref=e6" (Create Habit)
+agent-browser click "ref=e3" (Goals)
+agent-browser screenshot screenshots/task11-goals-with-habits.png
+agent-browser click "ref=e2" (Habits)
+agent-browser click "ref=e20" (Edit habit)
+agent-browser screenshot screenshots/task11-edit-habit-goal.png
+agent-browser screenshot screenshots/task11-habit-goal-linking.png
+```
+
+**Screenshots:**
+- screenshots/task11-goals-with-habits.png
+- screenshots/task11-edit-habit-goal.png
+- screenshots/task11-habit-goal-linking.png
+
+**Issues & Resolutions:**
+- Port 3000 was in use, Next.js automatically used port 3001
+- Initial server startup required additional wait time for compilation
+
+**Verification:**
+- Goal selector appears in Add Habit dialog with list of available goals
+- Goal selector appears in Edit Habit dialog with current goal pre-selected
+- Creating a habit with a goal links them in the database
+- Goals page shows linked habits with colored chips indicating completion status
+- Progress bar displays percentage based on linked habit completions
+- Edit habit correctly loads and displays the linked goal
+- Changing goal association in edit works correctly
 - Lint passes with no errors

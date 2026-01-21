@@ -359,7 +359,7 @@ src/
       "Show goal progress based on habit completions",
       "Verify linking works correctly"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "feature",

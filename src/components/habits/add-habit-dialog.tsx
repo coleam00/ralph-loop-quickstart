@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -22,6 +22,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { toast } from 'sonner';
+import type { Goal } from '@/lib/db';
 
 interface AddHabitDialogProps {
   onHabitAdded: () => void;
@@ -33,6 +34,26 @@ export function AddHabitDialog({ onHabitAdded }: AddHabitDialogProps) {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [frequency, setFrequency] = useState<'daily' | 'weekly'>('daily');
+  const [goalId, setGoalId] = useState<string>('none');
+  const [goals, setGoals] = useState<Goal[]>([]);
+  const [loadingGoals, setLoadingGoals] = useState(false);
+
+  useEffect(() => {
+    if (open) {
+      setLoadingGoals(true);
+      fetch('/api/goals')
+        .then((res) => res.json())
+        .then((data: Goal[]) => {
+          setGoals(data.filter((g) => !g.isCompleted));
+        })
+        .catch(() => {
+          setGoals([]);
+        })
+        .finally(() => {
+          setLoadingGoals(false);
+        });
+    }
+  }, [open]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -54,6 +75,7 @@ export function AddHabitDialog({ onHabitAdded }: AddHabitDialogProps) {
           name: name.trim(),
           description: description.trim() || null,
           frequency,
+          goalId: goalId !== 'none' ? goalId : null,
         }),
       });
 
@@ -67,6 +89,7 @@ export function AddHabitDialog({ onHabitAdded }: AddHabitDialogProps) {
       setName('');
       setDescription('');
       setFrequency('daily');
+      setGoalId('none');
       onHabitAdded();
     } catch (error) {
       toast.error(error instanceof Error ? error.message : 'Failed to create habit');
@@ -140,6 +163,26 @@ export function AddHabitDialog({ onHabitAdded }: AddHabitDialogProps) {
                 <SelectContent>
                   <SelectItem value="daily">Daily</SelectItem>
                   <SelectItem value="weekly">Weekly</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="goal">Link to Goal (optional)</Label>
+              <Select
+                value={goalId}
+                onValueChange={setGoalId}
+                disabled={loading || loadingGoals}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder={loadingGoals ? 'Loading goals...' : 'Select a goal'} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">No goal</SelectItem>
+                  {goals.map((goal) => (
+                    <SelectItem key={goal.id} value={goal.id}>
+                      {goal.name}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>

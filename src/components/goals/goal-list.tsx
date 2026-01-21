@@ -8,8 +8,19 @@ import { DeleteGoalDialog } from './delete-goal-dialog';
 import { toast } from 'sonner';
 import type { Goal } from '@/lib/db';
 
+interface LinkedHabit {
+  id: string;
+  name: string;
+  isCompleted: boolean;
+}
+
+interface GoalWithHabits extends Goal {
+  linkedHabits: LinkedHabit[];
+  progress: number;
+}
+
 export function GoalList() {
-  const [goals, setGoals] = useState<Goal[]>([]);
+  const [goals, setGoals] = useState<GoalWithHabits[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [editingGoal, setEditingGoal] = useState<Goal | null>(null);
@@ -25,7 +36,32 @@ export function GoalList() {
         throw new Error('Failed to fetch goals');
       }
       const goalsData: Goal[] = await response.json();
-      setGoals(goalsData);
+
+      // Fetch habits for each goal
+      const goalsWithHabits = await Promise.all(
+        goalsData.map(async (goal) => {
+          try {
+            const habitsResponse = await fetch(`/api/goals/${goal.id}/habits`);
+            if (habitsResponse.ok) {
+              const habitsData = await habitsResponse.json();
+              return {
+                ...goal,
+                linkedHabits: habitsData.habits.map((h: { id: string; name: string; isCompleted: boolean }) => ({
+                  id: h.id,
+                  name: h.name,
+                  isCompleted: h.isCompleted,
+                })),
+                progress: habitsData.progress,
+              };
+            }
+          } catch {
+            // If fetching habits fails, continue without them
+          }
+          return { ...goal, linkedHabits: [], progress: 0 };
+        })
+      );
+
+      setGoals(goalsWithHabits);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch goals');
     } finally {
@@ -180,6 +216,8 @@ export function GoalList() {
               onEdit={handleEdit}
               onDelete={handleDelete}
               onToggleComplete={handleToggleComplete}
+              linkedHabits={goal.linkedHabits}
+              progress={goal.progress}
             />
           ))}
         </div>

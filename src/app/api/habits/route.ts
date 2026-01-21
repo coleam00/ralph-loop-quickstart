@@ -1,6 +1,6 @@
 import { auth } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
-import { db, habits, type NewHabit } from '@/lib/db';
+import { db, habits, habitGoals, type NewHabit } from '@/lib/db';
 import { eq } from 'drizzle-orm';
 
 export async function GET() {
@@ -33,7 +33,7 @@ export async function POST(request: Request) {
 
   try {
     const body = await request.json();
-    const { name, description, frequency } = body;
+    const { name, description, frequency, goalId } = body;
 
     if (!name || !frequency) {
       return NextResponse.json(
@@ -57,6 +57,14 @@ export async function POST(request: Request) {
     };
 
     const [createdHabit] = await db.insert(habits).values(newHabit).returning();
+
+    // Create habit-goal association if goalId is provided
+    if (goalId) {
+      await db.insert(habitGoals).values({
+        habitId: createdHabit.id,
+        goalId: goalId,
+      });
+    }
 
     return NextResponse.json(createdHabit, { status: 201 });
   } catch (error) {

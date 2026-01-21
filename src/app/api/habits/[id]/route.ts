@@ -1,6 +1,6 @@
 import { auth } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
-import { db, habits } from '@/lib/db';
+import { db, habits, habitGoals } from '@/lib/db';
 import { eq, and } from 'drizzle-orm';
 
 export async function PUT(
@@ -16,7 +16,7 @@ export async function PUT(
   try {
     const { id } = await params;
     const body = await request.json();
-    const { name, description, frequency } = body;
+    const { name, description, frequency, goalId } = body;
 
     if (!name || !frequency) {
       return NextResponse.json(
@@ -51,6 +51,18 @@ export async function PUT(
       })
       .where(and(eq(habits.id, id), eq(habits.userId, userId)))
       .returning();
+
+    // Update habit-goal association
+    // First, remove existing associations for this habit
+    await db.delete(habitGoals).where(eq(habitGoals.habitId, id));
+
+    // Then, create new association if goalId is provided
+    if (goalId) {
+      await db.insert(habitGoals).values({
+        habitId: id,
+        goalId: goalId,
+      });
+    }
 
     return NextResponse.json(updatedHabit);
   } catch (error) {

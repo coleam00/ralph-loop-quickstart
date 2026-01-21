@@ -21,7 +21,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { toast } from 'sonner';
-import type { Habit } from '@/lib/db';
+import type { Habit, Goal } from '@/lib/db';
 
 interface EditHabitDialogProps {
   habit: Habit | null;
@@ -40,14 +40,47 @@ export function EditHabitDialog({
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [frequency, setFrequency] = useState<'daily' | 'weekly'>('daily');
+  const [goalId, setGoalId] = useState<string>('none');
+  const [goals, setGoals] = useState<Goal[]>([]);
+  const [loadingGoals, setLoadingGoals] = useState(false);
 
   useEffect(() => {
-    if (habit) {
+    if (open) {
+      setLoadingGoals(true);
+      fetch('/api/goals')
+        .then((res) => res.json())
+        .then((data: Goal[]) => {
+          setGoals(data.filter((g) => !g.isCompleted));
+        })
+        .catch(() => {
+          setGoals([]);
+        })
+        .finally(() => {
+          setLoadingGoals(false);
+        });
+    }
+  }, [open]);
+
+  useEffect(() => {
+    if (habit && open) {
       setName(habit.name);
       setDescription(habit.description || '');
       setFrequency(habit.frequency);
+      // Fetch current goal association
+      fetch(`/api/habits/${habit.id}/goals`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.goalId) {
+            setGoalId(data.goalId);
+          } else {
+            setGoalId('none');
+          }
+        })
+        .catch(() => {
+          setGoalId('none');
+        });
     }
-  }, [habit]);
+  }, [habit, open]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -71,6 +104,7 @@ export function EditHabitDialog({
           name: name.trim(),
           description: description.trim() || null,
           frequency,
+          goalId: goalId !== 'none' ? goalId : null,
         }),
       });
 
@@ -134,6 +168,26 @@ export function EditHabitDialog({
                 <SelectContent>
                   <SelectItem value="daily">Daily</SelectItem>
                   <SelectItem value="weekly">Weekly</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="edit-goal">Link to Goal (optional)</Label>
+              <Select
+                value={goalId}
+                onValueChange={setGoalId}
+                disabled={loading || loadingGoals}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder={loadingGoals ? 'Loading goals...' : 'Select a goal'} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">No goal</SelectItem>
+                  {goals.map((goal) => (
+                    <SelectItem key={goal.id} value={goal.id}>
+                      {goal.name}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
