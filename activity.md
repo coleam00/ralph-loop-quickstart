@@ -2,8 +2,8 @@
 
 ## Current Status
 **Last Updated:** 2026-01-20
-**Tasks Completed:** 7 / 19
-**Current Task:** Task 7 completed
+**Tasks Completed:** 8 / 19
+**Current Task:** Task 8 completed
 
 ---
 
@@ -320,3 +320,58 @@ agent-browser click "ref=e1" (Cancel)
 - Cancel button closes delete dialog without deleting
 - DELETE /api/habits/[id] endpoint properly validates ownership before deletion
 - Lint passes with no errors
+
+### 2026-01-20 - Task 8: Build habit completion functionality
+
+**Task:** Build habit completion functionality
+
+**Changes Made:**
+- Created src/app/api/habits/[id]/completions/route.ts with GET, POST, DELETE endpoints
+  - GET: Checks if habit is completed for current period (daily/weekly)
+  - POST: Marks habit as complete for current period
+  - DELETE: Uncompletes habit for current period
+- Implemented period calculation logic for daily (start/end of day) and weekly (start/end of week)
+- Updated src/components/habits/habit-card.tsx with:
+  - Completion toggle button (circular checkbox)
+  - Visual feedback: green background and border when completed
+  - Optimistic UI updates for instant feedback
+  - Toast notifications for success/error states
+- Updated src/components/habits/habit-list.tsx to:
+  - Fetch completion status for each habit in parallel
+  - Manage completion state across all habit cards
+  - Pass isCompleted prop to HabitCard components
+- Habit cards now show:
+  - Empty circle for incomplete habits
+  - Green filled circle with checkmark for completed habits
+  - Green-tinted card background for completed habits
+  - "Completed" label badge
+
+**Commands Run:**
+```bash
+npm run dev
+npm run lint
+npm run db:push
+agent-browser open http://localhost:3001/sign-in
+agent-browser click "ref=e1" (Go to Dashboard)
+agent-browser click "ref=e2" (Habits)
+agent-browser click "ref=e10" (Mark as complete)
+agent-browser screenshot screenshots/task8-habit-completion-final.png
+```
+
+**Screenshot:** screenshots/task8-habit-completion-final.png
+
+**Issues & Resolutions:**
+- Dev server port 3000 was in use - Next.js automatically used port 3001
+- Page load timeout during initial compilation - waited for compilation to complete
+
+**Verification:**
+- Completions API route (GET, POST, DELETE) works correctly
+- Completion toggle button appears on all habit cards
+- Clicking the toggle marks habit as complete with visual feedback
+- Green filled circle appears for completed habits
+- Card background changes to green tint when completed
+- Toast notification appears on successful completion
+- Optimistic UI provides instant feedback
+- Daily vs weekly period calculation implemented correctly
+- Lint passes with no errors
+- Database schema already in sync (no changes needed)

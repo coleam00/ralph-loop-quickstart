@@ -7,14 +7,31 @@ import { EditHabitDialog } from './edit-habit-dialog';
 import { DeleteHabitDialog } from './delete-habit-dialog';
 import type { Habit } from '@/lib/db';
 
+interface HabitWithCompletion extends Habit {
+  isCompleted: boolean;
+}
+
 export function HabitList() {
-  const [habits, setHabits] = useState<Habit[]>([]);
+  const [habits, setHabits] = useState<HabitWithCompletion[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [editingHabit, setEditingHabit] = useState<Habit | null>(null);
   const [deletingHabit, setDeletingHabit] = useState<Habit | null>(null);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+
+  const fetchCompletionStatus = useCallback(async (habitId: string): Promise<boolean> => {
+    try {
+      const response = await fetch(`/api/habits/${habitId}/completions`);
+      if (!response.ok) {
+        return false;
+      }
+      const data = await response.json();
+      return data.isCompleted;
+    } catch {
+      return false;
+    }
+  }, []);
 
   const fetchHabits = useCallback(async () => {
     try {
@@ -23,14 +40,23 @@ export function HabitList() {
       if (!response.ok) {
         throw new Error('Failed to fetch habits');
       }
-      const data = await response.json();
-      setHabits(data);
+      const habitsData: Habit[] = await response.json();
+
+      // Fetch completion status for each habit in parallel
+      const habitsWithCompletion = await Promise.all(
+        habitsData.map(async (habit) => {
+          const isCompleted = await fetchCompletionStatus(habit.id);
+          return { ...habit, isCompleted };
+        })
+      );
+
+      setHabits(habitsWithCompletion);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch habits');
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [fetchCompletionStatus]);
 
   useEffect(() => {
     fetchHabits();
@@ -44,6 +70,14 @@ export function HabitList() {
   const handleDelete = (habit: Habit) => {
     setDeletingHabit(habit);
     setDeleteDialogOpen(true);
+  };
+
+  const handleCompletionChange = (habitId: string, isCompleted: boolean) => {
+    setHabits((prevHabits) =>
+      prevHabits.map((habit) =>
+        habit.id === habitId ? { ...habit, isCompleted } : habit
+      )
+    );
   };
 
   if (loading) {
@@ -135,8 +169,10 @@ export function HabitList() {
             <HabitCard
               key={habit.id}
               habit={habit}
+              isCompleted={habit.isCompleted}
               onEdit={handleEdit}
               onDelete={handleDelete}
+              onCompletionChange={handleCompletionChange}
             />
           ))}
         </div>

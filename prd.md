@@ -322,7 +322,7 @@ src/
       "Add optimistic UI updates",
       "Verify completions are recorded correctly"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "feature",
