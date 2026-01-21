@@ -459,6 +459,18 @@ src/
       "Verify all features work together"
     ],
     "passes": true
+  },
+  {
+    "category": "styling",
+    "description": "Implement modern blue dark theme",
+    "steps": [
+      "Update dark mode CSS variables with blue-tinted colors",
+      "Add gradient backgrounds and modern accent colors",
+      "Update primary colors to vibrant blue palette",
+      "Polish cards and surfaces with subtle blue tints",
+      "Verify theme looks modern and cohesive"
+    ],
+    "passes": true
   }
 ]
 ```

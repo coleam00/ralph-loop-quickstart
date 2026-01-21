@@ -83,7 +83,7 @@ for ((i=1; i<=MAX_ITERATIONS; i++)); do
 
   # Run Claude with the prompt from PROMPT.md
   # Using --output-format text for cleaner output
-  result=$(claude -p "$(cat PROMPT.md)" --output-format text 2>&1) || true
+  result=$(claude -p "$(cat PROMPT.md)" --output-format text --dangerously-skip-permissions 2>&1) || true
 
   echo "$result"
   echo ""

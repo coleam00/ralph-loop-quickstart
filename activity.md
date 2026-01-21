@@ -2,7 +2,7 @@
 
 ## Current Status
 **Last Updated:** 2026-01-21
-**Tasks Completed:** 19 / 19
+**Tasks Completed:** 20 / 20
 **Current Task:** ALL TASKS COMPLETE
 
 ---
@@ -1045,3 +1045,51 @@ agent-browser screenshot screenshots/task17-dark-mode.png
 - Smooth transitions on habit completion buttons
 - Hover and focus states working on interactive elements
 - Lint passes with no errors
+
+---
+
+### 2026-01-21 - Task 20: Implement modern blue dark theme
+
+**Task:** Implement modern blue dark theme
+
+**Changes Made:**
+- Updated src/app/globals.css with modern blue dark theme:
+  - Changed dark mode background from neutral gray to deep blue-black (oklch 0.13 0.02 260)
+  - Updated card backgrounds with subtle blue tints (oklch 0.18 0.025 255)
+  - Set primary color to vibrant blue (oklch 0.65 0.2 255)
+  - Added blue-tinted borders for better visual cohesion
+  - Updated sidebar colors with deeper blue tones
+  - Added modern chart colors with vibrant palette
+- Added theme enhancements:
+  - Subtle radial gradient at top of page for depth
+  - Card hover glow effect in dark mode
+  - Primary button glow on hover
+  - Smooth transitions for theme changes
+
+**Commands Run:**
+```bash
+npm run dev
+agent-browser open http://localhost:3000
+agent-browser screenshot screenshots/task20-homepage.png
+agent-browser screenshot screenshots/task20-dark-mode-dashboard.png
+agent-browser screenshot screenshots/task20-habits-dark-full.png
+agent-browser screenshot screenshots/task20-coach-page.png
+```
+
+**Screenshots:**
+- screenshots/task20-homepage.png - Homepage with blue dark theme
+- screenshots/task20-dark-mode-dashboard.png - Dashboard in dark mode
+- screenshots/task20-habits-dark-full.png - Habits page with full theme
+- screenshots/task20-coach-page.png - Coach page in dark mode
+
+**Issues & Resolutions:**
+- Build cache error after CSS changes - cleared .next folder and restarted dev server
+
+**Verification:**
+- Deep blue-black background looks modern and professional
+- Blue-tinted cards and borders provide visual cohesion
+- Vibrant blue primary color for buttons and accents
+- Theme is consistent across Dashboard, Habits, Goals, and Coach pages
+- Light mode still works correctly (unchanged)
+- Theme toggle switches smoothly between modes
+- All text remains readable with good contrast
