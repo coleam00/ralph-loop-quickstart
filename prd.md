@@ -296,7 +296,7 @@ src/
       "Implement form with name, description, frequency",
       "Verify habits are saved and displayed"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "feature",

@@ -2,8 +2,8 @@
 
 ## Current Status
 **Last Updated:** 2026-01-20
-**Tasks Completed:** 5 / 19
-**Current Task:** Task 5 completed
+**Tasks Completed:** 6 / 19
+**Current Task:** Task 6 completed
 
 ---
 
@@ -221,3 +221,54 @@ agent-browser screenshot screenshots/task5-dashboard-layout.png
   - /habits (Static)
   - /goals (Static)
   - /coach (Static)
+
+### 2026-01-20 - Task 6: Implement habit creation and listing
+
+**Task:** Implement habit creation and listing
+
+**Changes Made:**
+- Created src/app/api/habits/route.ts with GET and POST endpoints
+  - GET: Fetches all habits for authenticated user
+  - POST: Creates new habit with name, description, frequency validation
+- Created src/components/habits/habit-card.tsx - displays individual habit cards with name, description, frequency badge, and streak indicator
+- Created src/components/habits/add-habit-dialog.tsx - modal dialog with form for creating new habits
+- Created src/components/habits/habit-list.tsx - fetches and displays habits with loading states and empty state
+- Updated src/app/(dashboard)/habits/page.tsx to use HabitList component
+- Installed additional shadcn/ui components: label, select, textarea for form
+- Updated drizzle.config.ts and src/lib/db/index.ts to use POSTGRES_URL environment variable
+- Installed dotenv for drizzle-kit to load environment variables
+
+**Commands Run:**
+```bash
+npm run dev
+npm run db:push
+npm install dotenv
+npx shadcn@latest add label select textarea -y
+npm run lint
+agent-browser open http://localhost:3004/sign-in
+agent-browser click "ref=e1" (Go to Dashboard)
+agent-browser click "ref=e2" (Habits)
+agent-browser click "ref=e7" (Add Habit)
+agent-browser fill "ref=e1" "Morning meditation"
+agent-browser fill "ref=e2" "10 minutes of mindfulness each morning"
+agent-browser click "ref=e5" (Create Habit)
+agent-browser screenshot screenshots/task6-habit-creation.png
+```
+
+**Screenshot:** screenshots/task6-habit-creation.png
+
+**Issues & Resolutions:**
+- drizzle.config.ts wasn't loading .env file - added dotenv/config import
+- DATABASE_URL vs POSTGRES_URL mismatch - updated to use POSTGRES_URL to match .env
+- Dev server port conflicts - used available port 3004
+- Build hangs on WSL - skipping build per user instruction, dev server works correctly
+
+**Verification:**
+- Habits API route (GET, POST) works correctly
+- Habit list displays loading skeleton while fetching
+- Empty state shows when no habits exist
+- Add Habit dialog opens with form fields: name, description, frequency select
+- Created habit "Morning meditation" with description and daily frequency
+- Habit card displays with name, frequency badge, description, and streak indicator
+- Toast notification appears on successful habit creation
+- Lint passes with no errors
