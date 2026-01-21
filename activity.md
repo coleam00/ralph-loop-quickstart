@@ -2,8 +2,8 @@
 
 ## Current Status
 **Last Updated:** 2026-01-21
-**Tasks Completed:** 15 / 19
-**Current Task:** Task 15 completed
+**Tasks Completed:** 16 / 19
+**Current Task:** Task 16 completed
 
 ---
 
@@ -813,4 +813,78 @@ agent-browser screenshot screenshots/task15-chat-response.png
 - New insight correctly identified topic ("challenges") with red badge
 - Related habits displayed as chips (Daily workout, Exercise daily, Morning Exercise, Code practice)
 - Insight extraction runs in background without blocking chat
+- Lint passes with no errors
+
+### 2026-01-21 - Task 16: Build dashboard overview page
+
+**Task:** Build dashboard overview page
+
+**Changes Made:**
+- Created src/app/api/dashboard/route.ts - Dashboard API endpoint:
+  - GET endpoint fetches user's habits, goals, completions, and streaks
+  - Returns stats (activeHabits, completedToday, totalDailyHabits, bestStreak, activeGoals)
+  - Returns todaysHabits and weeklyHabits with completion status and streak info
+  - Returns goals list and recentActivity from past week
+- Created src/app/api/dashboard/motivation/route.ts - AI motivational message endpoint:
+  - Fetches user context (habits, goals, streaks)
+  - Uses OpenRouter to generate personalized motivational messages
+  - Includes fallback default messages based on user progress
+- Created src/components/dashboard/stats-cards.tsx - Stats overview cards:
+  - Active Habits count, Completed Today (X/Y), Best Streak, Active Goals
+  - Dynamic messaging based on user progress
+- Created src/components/dashboard/todays-habits.tsx - Today's habits with quick complete:
+  - Lists daily habits with completion toggle buttons
+  - Shows streak count for each habit
+  - Visual feedback (green highlighting) for completed habits
+  - Progress percentage display
+  - Empty state with link to create habits
+- Created src/components/dashboard/goal-progress.tsx - Goal progress overview:
+  - Lists active goals with category badges
+  - Shows target dates and days remaining
+  - Overdue detection with red warning
+  - Empty state with link to create goals
+- Created src/components/dashboard/motivational-message.tsx - AI coach message card:
+  - Displays personalized motivational message from AI
+  - Refresh button to get a new message
+  - Loading skeleton state
+- Created src/components/dashboard/index.ts - Exports all dashboard components
+- Updated src/app/(dashboard)/dashboard/page.tsx:
+  - Converted to client component with dynamic data fetching
+  - Integrated all new dashboard components
+  - Added Recent Activity section showing past completions
+  - Added loading skeletons and error states
+  - Implemented handleCompletionChange for optimistic UI updates
+
+**Commands Run:**
+```bash
+npm run dev
+npm run lint
+agent-browser open http://localhost:3000/sign-in
+agent-browser fill "ref=e2" "coleam"
+agent-browser fill "ref=e3" "AdminPassword4#5$"
+agent-browser click "ref=e5"
+agent-browser click "ref=e1" (Go to Dashboard)
+agent-browser screenshot screenshots/task16-dashboard.png
+agent-browser click "ref=e7" (Quick complete a habit)
+agent-browser screenshot screenshots/task16-quick-complete.png
+```
+
+**Screenshots:**
+- screenshots/task16-dashboard.png
+- screenshots/task16-dashboard-full.png
+- screenshots/task16-quick-complete.png
+
+**Issues & Resolutions:**
+- Module cache error with vendor-chunks/swr.js - cleared .next folder and restarted dev server
+- Page load timeouts during Clerk initialization - increased wait times
+
+**Verification:**
+- Dashboard API endpoint returns all required data (habits, goals, stats, activity)
+- AI Coach motivational message displays with personalized content
+- Stats cards show accurate counts: Active Habits (7), Completed Today (1/6), Best Streak (2 days), Active Goals (2)
+- Today's Habits section lists daily habits with completion status and streaks
+- Quick complete buttons work with optimistic UI updates
+- Goal Progress section shows active goals with category badges and due dates
+- Recent Activity section shows past completions with relative timestamps
+- Refresh button on AI message works to get new motivation
 - Lint passes with no errors

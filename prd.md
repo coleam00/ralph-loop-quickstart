@@ -420,7 +420,7 @@ src/
       "Add motivational message from AI",
       "Verify all data displays correctly"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "styling",
