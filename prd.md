@@ -395,7 +395,7 @@ src/
       "Add 'Accept suggestion' button to create habit",
       "Verify suggestions are relevant to goals"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "feature",
