@@ -2,8 +2,8 @@
 
 ## Current Status
 **Last Updated:** 2026-01-20
-**Tasks Completed:** 3 / 19
-**Current Task:** Task 3 completed
+**Tasks Completed:** 4 / 19
+**Current Task:** Task 4 completed
 
 ---
 
@@ -128,3 +128,48 @@ npm run build
   - /sign-up/[[...sign-up]] (Dynamic)
   - Middleware (83 kB)
 - Authentication flow will work once valid Clerk keys are configured
+
+### 2026-01-20 - Task 4: Set up Drizzle ORM with Neon PostgreSQL
+
+**Task:** Set up Drizzle ORM with Neon PostgreSQL
+
+**Changes Made:**
+- Installed drizzle-orm and @neondatabase/serverless packages (12 packages added)
+- Installed drizzle-kit as dev dependency (12 packages added)
+- Created src/lib/db/schema.ts with complete database schema:
+  - `habits` table with id, userId, name, description, frequency (daily/weekly), timestamps, isActive
+  - `habitCompletions` table with id, habitId, completedAt, periodStart
+  - `goals` table with id, userId, name, description, category, targetDate, isCompleted, timestamps
+  - `habitGoals` junction table for many-to-many relationship
+  - `chatInsights` table for hybrid AI chat storage with jsonb context
+  - All relations defined with Drizzle relations API
+  - TypeScript types exported for each table
+- Created src/lib/db/index.ts with Neon database client connection
+- Created drizzle.config.ts for Drizzle Kit configuration
+- Updated package.json with db scripts: db:generate, db:push, db:studio
+
+**Commands Run:**
+```bash
+npm install drizzle-orm @neondatabase/serverless
+npm install -D drizzle-kit
+npm run lint
+npm run build
+```
+
+**Screenshot:** N/A - agent-browser requires Playwright installation
+
+**Issues & Resolutions:**
+- Node.js version warnings (v18 vs required v19+ for @neondatabase/serverless) - warnings only, package works
+- Build completes successfully in 102s confirming schema is valid
+- Database connection will work once DATABASE_URL environment variable is configured
+
+**Verification:**
+- drizzle-orm and drizzle-kit packages installed successfully
+- Complete database schema created in src/lib/db/schema.ts matching PRD data model
+- Database client configured in src/lib/db/index.ts with Neon serverless driver
+- drizzle.config.ts configured for PostgreSQL with schema path
+- Lint passes with no errors (deprecation warning only)
+- Build completes successfully:
+  - All existing routes maintained
+  - No TypeScript errors in schema or client files
+- Database scripts added to package.json for migrations

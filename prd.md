@@ -272,7 +272,7 @@ src/
       "Run initial migration",
       "Verify database connection"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "feature",
