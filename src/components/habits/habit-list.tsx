@@ -7,8 +7,17 @@ import { EditHabitDialog } from './edit-habit-dialog';
 import { DeleteHabitDialog } from './delete-habit-dialog';
 import type { Habit } from '@/lib/db';
 
+interface StreakData {
+  currentStreak: number;
+  longestStreak: number;
+  totalCompletions: number;
+  milestone: string | null;
+  milestoneColor: string;
+}
+
 interface HabitWithCompletion extends Habit {
   isCompleted: boolean;
+  streakData: StreakData | null;
 }
 
 export function HabitList() {
@@ -33,6 +42,18 @@ export function HabitList() {
     }
   }, []);
 
+  const fetchStreakData = useCallback(async (habitId: string): Promise<StreakData | null> => {
+    try {
+      const response = await fetch(`/api/habits/${habitId}/streak`);
+      if (!response.ok) {
+        return null;
+      }
+      return await response.json();
+    } catch {
+      return null;
+    }
+  }, []);
+
   const fetchHabits = useCallback(async () => {
     try {
       setError(null);
@@ -42,21 +63,24 @@ export function HabitList() {
       }
       const habitsData: Habit[] = await response.json();
 
-      // Fetch completion status for each habit in parallel
-      const habitsWithCompletion = await Promise.all(
+      // Fetch completion status and streak data for each habit in parallel
+      const habitsWithData = await Promise.all(
         habitsData.map(async (habit) => {
-          const isCompleted = await fetchCompletionStatus(habit.id);
-          return { ...habit, isCompleted };
+          const [isCompleted, streakData] = await Promise.all([
+            fetchCompletionStatus(habit.id),
+            fetchStreakData(habit.id),
+          ]);
+          return { ...habit, isCompleted, streakData };
         })
       );
 
-      setHabits(habitsWithCompletion);
+      setHabits(habitsWithData);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch habits');
     } finally {
       setLoading(false);
     }
-  }, [fetchCompletionStatus]);
+  }, [fetchCompletionStatus, fetchStreakData]);
 
   useEffect(() => {
     fetchHabits();
@@ -170,6 +194,9 @@ export function HabitList() {
               key={habit.id}
               habit={habit}
               isCompleted={habit.isCompleted}
+              streak={habit.streakData?.currentStreak ?? 0}
+              milestone={habit.streakData?.milestone ?? null}
+              milestoneColor={habit.streakData?.milestoneColor ?? 'text-muted-foreground'}
               onEdit={handleEdit}
               onDelete={handleDelete}
               onCompletionChange={handleCompletionChange}

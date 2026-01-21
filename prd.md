@@ -335,7 +335,7 @@ src/
       "Add streak milestone indicators",
       "Verify streak calculations are accurate"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "feature",
