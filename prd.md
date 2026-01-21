@@ -433,7 +433,7 @@ src/
       "Add loading skeletons",
       "Verify UI is polished and consistent"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "category": "styling",

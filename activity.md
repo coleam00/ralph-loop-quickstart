@@ -2,8 +2,8 @@
 
 ## Current Status
 **Last Updated:** 2026-01-21
-**Tasks Completed:** 16 / 19
-**Current Task:** Task 16 completed
+**Tasks Completed:** 17 / 19
+**Current Task:** Task 17 completed
 
 ---
 
@@ -887,4 +887,57 @@ agent-browser screenshot screenshots/task16-quick-complete.png
 - Goal Progress section shows active goals with category badges and due dates
 - Recent Activity section shows past completions with relative timestamps
 - Refresh button on AI message works to get new motivation
+- Lint passes with no errors
+
+### 2026-01-21 - Task 17: Polish UI with animations and dark mode
+
+**Task:** Polish UI with animations and dark mode
+
+**Changes Made:**
+- Created src/components/theme-provider.tsx - Theme provider using next-themes
+  - Wraps app with NextThemesProvider
+  - Enables system theme detection and dark/light mode switching
+- Created src/components/theme-toggle.tsx - Theme toggle button component
+  - Sun/Moon icons with smooth rotation animation
+  - Handles hydration by mounting state
+  - Accessible with sr-only label
+- Updated src/app/layout.tsx:
+  - Added ThemeProvider wrapper with class attribute
+  - Set defaultTheme="system" with enableSystem
+  - Added suppressHydrationWarning to html element
+- Updated src/components/layout/header.tsx:
+  - Added ThemeToggle button next to UserButton
+  - Positioned in top-right header area
+- Dark mode styling already configured in globals.css (from shadcn/ui setup)
+- Loading skeletons already implemented in dashboard components
+- Smooth transitions already present on habit cards and buttons
+- Responsive design already implemented in earlier tasks
+
+**Commands Run:**
+```bash
+npm run dev
+npm run lint
+agent-browser goto http://localhost:3000/dashboard
+agent-browser click "ref=e5" (Toggle theme)
+agent-browser screenshot screenshots/task17-light-mode.png
+agent-browser screenshot screenshots/task17-dark-mode.png
+```
+
+**Screenshots:**
+- screenshots/task17-light-mode.png
+- screenshots/task17-dark-mode.png
+
+**Issues & Resolutions:**
+- Server restart required to pick up new component files
+- Page load timeouts - increased timeout for browser navigation
+
+**Verification:**
+- Dark/light mode toggle button appears in header
+- Clicking toggle switches between light and dark themes
+- Theme persists using system preference by default
+- All UI elements properly styled in both themes
+- Sidebar, header, cards, buttons all have appropriate dark mode styling
+- Loading skeletons present in dashboard while fetching data
+- Smooth transitions on habit completion buttons
+- Hover and focus states working on interactive elements
 - Lint passes with no errors

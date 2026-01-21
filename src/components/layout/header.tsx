@@ -2,6 +2,7 @@
 
 import { UserButton } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 interface HeaderProps {
   onMenuClick: () => void;
@@ -39,7 +40,8 @@ export function Header({ onMenuClick }: HeaderProps) {
       <div className="hidden lg:block" />
 
       {/* Right side */}
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-2">
+        <ThemeToggle />
         <UserButton
           afterSignOutUrl="/"
           appearance={{
